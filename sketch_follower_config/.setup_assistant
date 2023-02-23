@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: sketch_follower
+    relative_path: robot_description/urdf/2_dof_arm.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/robot_arm.srdf
+  CONFIG:
+    author_name: Khaled Jalloul
+    author_email: khaled.jalloul@hotmail.com
+    generated_timestamp: 1677003684

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="sf" value="0.005"/>
+
+    <material name="blue">
+        <color rgba="0 0.5 1 1" />
+    </material>
+    <material name="green">
+        <color rgba="0 1 0.5 1" />
+    </material>
+    <material name="red">
+        <color rgba="1 0.5 0.5 1" />
+    </material>
+    <material name="purple">
+        <color rgba="0.8 0 1 1" />
+    </material>
+
+    <xacro:macro name="link" params="index material">
+        <link name="link_${index}">
+            <xacro:inertial m="0.3" x="0.5" y="2" z="0.1" oy="0.75" oz="0.05" />
+            <visual>
+                <origin xyz="0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="package://sketch_follower/robot_description/meshes/link.stl" scale="${sf} ${sf} ${sf}"/>
+                </geometry>
+                <material name="${material}" />
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="package://sketch_follower/robot_description/meshes/link.stl" scale="${sf} ${sf} ${sf}"/>
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="inertial" params="m x y z oy oz" >
+        <inertial>
+            <origin xyz="0 ${oy} ${oz}" rpy="0.0 0.0 0.0"/>
+            <mass value="${m}"/>
+            <inertia    ixx="${(1/12) * m * (z*z + y*y)}" ixy="0.0" ixz="0.0"
+                        iyy="${(1/12) * m * (x*x + z*z)}" iyz="0.0"
+                        izz="${(1/12) * m * (y*y + x*x)}"/>
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="transmission" params="name">
+        <transmission name='${name}_transmission'>
+            <type>transmission_interface/SimpleTransmission</type>
+                <joint name='${name}'>
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+            <actuator name='${name}_actuator'>
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+    
+</robot>

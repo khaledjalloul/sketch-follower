@@ -1,0 +1,5 @@
+<launch>
+
+  <node name="moveit_cpp" pkg="sketch_follower" type="moveit_interface" respawn="false" output="screen" />
+
+</launch>
