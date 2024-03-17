@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot_arm">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="sketch_follower">
     <xacro:include filename="$(find sketch_follower)/robot_description/urdf/helpers.xacro"/>
     
     <gazebo>

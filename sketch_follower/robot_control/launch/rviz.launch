@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <launch>
+    <group ns="sketch_follower">
+        <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/robot_arm.urdf.xacro" />
+        <!-- <arg name="rviz_config_file" default="$(find sketch_follower)/robot_control/config/robot_arm.rviz" /> -->
 
-    <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/2_dof_arm.xacro" />
-    <arg name="rviz_config_file" default="$(find sketch_follower)/robot_control/config/robot_arm.rviz" />
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
 
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
-    <!-- <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" /> -->
-    <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui" />
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_config_file)" />
-
+        <!-- <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" /> -->
+        <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui" />
+        <node pkg="rviz" type="rviz" name="rviz"/>
+    </group>
 </launch>

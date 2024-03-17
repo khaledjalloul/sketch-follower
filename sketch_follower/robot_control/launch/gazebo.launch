@@ -1,14 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-
-    <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/robot_arm.urdf.xacro" />
-    <rosparam command="load" file='$(find sketch_follower)/robot_control/config/control.yaml'/>
-
-    <node name='robot_state_publisher' pkg='robot_state_publisher' type='robot_state_publisher' respawn='false' output='screen'>
-        <remap from='/joint_states' to='/robot_arm/joint_states' />
-    </node>
-    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" />
-
     <include file="$(find gazebo_ros)/launch/empty_world.launch" >
         <arg name="paused" value="false"/>
         <arg name="use_sim_time" value="true"/>
@@ -17,9 +8,20 @@
         <arg name="debug" value="false"/>
     </include>
 
-    <node pkg="gazebo_ros" name="spawning_urdf" type="spawn_model" args="-urdf -model robot_arm -param robot_description"/>
 
-    <node name='controller_spawner' pkg='controller_manager' type='spawner' respawn='false' output='screen' ns='/robot_arm'
-        args='joint_state_controller link_0_position_controller link_1_position_controller link_2_position_controller' />
-    
+    <group ns="sketch_follower">
+        <rosparam command="load" file='$(find sketch_follower)/robot_control/config/control.yaml'/>
+        <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/robot_arm.urdf.xacro" />
+
+        <node pkg="gazebo_ros" name="spawn_urdf" type="spawn_model" args="-urdf -model robot_arm -param robot_description"/>
+
+        <node name='controller_spawner' pkg='controller_manager' type='spawner' respawn='false' output='screen'
+            args='joint_state_controller joint_0_effort_controller joint_1_effort_controller joint_2_effort_controller' />
+
+        <node name='robot_state_publisher' pkg='robot_state_publisher' type='robot_state_publisher' respawn='false' output='screen' />
+
+        <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" />
+    </group>
+
+
 </launch>

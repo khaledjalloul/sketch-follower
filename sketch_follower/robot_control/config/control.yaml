@@ -1,19 +1,15 @@
-robot_arm:
-  joint_state_controller:
-    type: joint_state_controller/JointStateController
-    publish_rate: 50
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
 
-  link_0_position_controller:
-    type: effort_controllers/JointPositionController
-    joint: link_0_joint
-    pid: {p: 100.0, i: 0.01, d: 10.0}
+joint_0_effort_controller:
+  type: effort_controllers/JointEffortController
+  joint: link_0_joint
 
-  link_1_position_controller:
-    type: effort_controllers/JointPositionController
-    joint: link_1_joint
-    pid: {p: 100.0, i: 0.01, d: 10.0}
+joint_1_effort_controller:
+  type: effort_controllers/JointEffortController
+  joint: link_1_joint
 
-  link_2_position_controller:
-    type: effort_controllers/JointPositionController
-    joint: link_2_joint
-    pid: {p: 100.0, i: 0.01, d: 10.0}
+joint_2_effort_controller:
+  type: effort_controllers/JointEffortController
+  joint: link_2_joint
