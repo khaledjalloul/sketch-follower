@@ -21,6 +21,8 @@
         <node name='robot_state_publisher' pkg='robot_state_publisher' type='robot_state_publisher' respawn='false' output='screen' />
 
         <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" />
+
+        <node name="cursor_publisher" pkg="sketch_follower" type="cursor_publisher.py" output="screen"/>
     </group>
 
 

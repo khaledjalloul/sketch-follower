@@ -1,6 +1,9 @@
 import numpy as np
 from typing import Tuple
 import cvxpy as cp
+import do_mpc
+import casadi as ca
+import sympy as sp
 
 
 class Kinematics:
@@ -12,7 +15,7 @@ class Kinematics:
 
         self.n = np.array([0., 0., 1.])
 
-    def get_robot_state(self, q = None) -> Tuple[np.ndarray, np.ndarray]:
+    def get_robot_state(self, q=None) -> Tuple[np.ndarray, np.ndarray]:
         if q is None:
             q = self.q
 
@@ -60,11 +63,44 @@ class Kinematics:
             p_current, J = self.get_robot_state()
             p_J = J[0:3]
 
-            diff = (p_desired - p_current)[:, np.newaxis]
+            diff = (p_desired - p_current)
             err = np.linalg.norm(diff)
-            qd = (np.linalg.pinv(p_J) @ diff).reshape(-1)
+            qd = (np.linalg.pinv(p_J) @ diff)
 
             self.q += qd
+            i += 1
+
+        self.q = self.q % (2 * np.pi)
+        self.q = np.where(self.q > np.pi, self.q - 2 * np.pi, self.q)
+
+        return self.q
+
+    def inv_kin_qp(self, p_desired: np.ndarray) -> np.ndarray:
+        dq = cp.Variable(3)
+        J_param = cp.Parameter((3, 3))
+        diff_param = cp.Parameter(3)
+        # q_param = cp.Parameter(3)
+
+        constraints = []
+
+        prob = cp.Problem(cp.Minimize(cp.sum_squares(
+            J_param @ dq - diff_param)), constraints)
+
+        q_param = self.q
+        p_current, _ = self.get_robot_state()
+        err = np.linalg.norm(p_desired - p_current)
+        i = 0
+
+        while err > 0.1 and i < 100:
+            p_current, J = self.get_robot_state()
+            J_param.value = J[0:3]
+
+            diff_param.value = (p_desired - p_current)
+            err = np.linalg.norm(diff_param.value)
+            prob.solve(warm_start=True, solver='ECOS_BB')
+
+            self.q += dq.value
+
             i += 1
 
         self.q = self.q % (2 * np.pi)
@@ -78,5 +114,5 @@ if __name__ == "__main__":
     kin = Kinematics()
     p_desired = np.array([-2., 1, 0])
 
-    q = kin.inv_kin(p_desired)
-    print(q)
+    print(kin.inv_kin(p_desired))
+    print(kin.inv_kin_qp(p_desired))
