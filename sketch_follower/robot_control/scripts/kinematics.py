@@ -55,20 +55,6 @@ class Kinematics:
         J = self.J_sym(q)
         return np.array(J).astype(np.float64)
 
-    # def p(self, q_val):
-    #     q1, q2, q3 = sp.symbols('q1 q2 q3')
-    #     q = sp.Matrix([q1, q2, q3])
-    #     p = self.p_sym(q)
-    #     p_val = p.subs([(q[i], q_val[i]) for i in range(len(q_val))])
-    #     return np.array(p_val).astype(np.float64)
-
-    # def J(self, q_val):
-    #     q1, q2, q3 = sp.symbols('q1 q2 q3')
-    #     q = sp.Matrix([q1, q2, q3])
-    #     J = self.J_sym(q)
-    #     J_val = J.subs([(q[i], q_val[i]) for i in range(len(q_val))])
-    #     return np.array(J_val).astype(np.float64)
-
     def w(self, q, dq):
         return self.J(q) @ dq
 
@@ -80,9 +66,18 @@ class Kinematics:
         J = self.J_sym(q)
         dJ = sp.Derivative(J).doit()
 
-        dJ_val = dJ.subs([(sp.Derivative(q[i]), dq_val[i])
-                         for i in range(len(dq_val))])
-        dJ_val = dJ_val.subs([(q[i], q_val[i]) for i in range(len(q_val))])
+        dJ_func = sp.lambdify(
+            (q1(t), q2(t), q3(t),
+             sp.Derivative(q1(t)),
+             sp.Derivative(q2(t)),
+             sp.Derivative(q3(t))), dJ, "numpy")
+
+        dJ_val = dJ_func(*q_val, *dq_val)
+
+        # dJ_val = dJ.subs([
+        #     *[(sp.Derivative(q[i]), dq_val[i]) for i in range(len(dq_val))],
+        #     *[(q[i], q_val[i]) for i in range(len(q_val))]
+        # ])
 
         return np.array(dJ_val).astype(np.float64)
 
@@ -121,34 +116,6 @@ class Kinematics:
         ddq = np.linalg.pinv(J_p) @ (dw_desired - dJ_p @ dq)
 
         return ddq
-
-    # def get_dynamics(self, q, dq):
-    #     m = 0.3
-    #     x = 0.5
-    #     y = 2
-    #     z = 0.1
-
-    #     n = np.array([0, 0, 1])
-
-    #     intertia = (1/12) * m * np.array([[z ** 2 + y ** 2, 0, 0],
-    #                                       [0, x ** 2 + z ** 2, 0],
-    #                                       [0, 0, y ** 2 + x ** 2]])
-
-    #     T_I0 = np.array([[np.cos(q[0]), -np.sin(q[0]), 0,  0],
-    #                      [np.sin(q[0]),  np.cos(q[0]),  0,  0],
-    #                      [0,             0,             1,  0],
-    #                      [0,             0,             0,  1]])
-
-    #     Ir_IS1 = T_I0 @ np.array([0, 0.75, 0])
-
-    #     J1_p = np.c_[np.cross(n, Ir_IS1),
-    #                  np.cross(n, Ir_IS1),
-    #                  np.cross(n, Ir_IS1)]
-    #     J1_r = np.c_[n, n, n]
-
-    #     M1 = m * J1_p.T @ J1_p + J1_r.T @ intertia @ J1_r
-
-    #     # b1 = m * J1_p.T @ self.
 
 
 if __name__ == "__main__":

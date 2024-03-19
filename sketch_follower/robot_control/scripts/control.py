@@ -2,10 +2,11 @@ import numpy as np
 import rospy
 
 from kinematics import Kinematics
-from linear_mpc import LinearMPC
+from dynamics import Dynamics
+# from linear_mpc import LinearMPC
 from ros_interface import ROSInterface
 
-kin = Kinematics()
+kin = Dynamics()
 sim = ROSInterface()
 
 r = rospy.Rate(10)
@@ -17,39 +18,45 @@ method = 'pid_task_space'
 
 
 if method == 'pid_joint_space':
-    kp = 5
+    kp = 1
     kd = 0.1
 
     while not rospy.is_shutdown():
         q_desired = kin.inv_kin_q(sim.p_desired, sim.q)
-        print(q_desired)
-        
+
         ddq = kp * (q_desired - sim.q) + kd * (0 - sim.dq)
+        tau = kin.forward_dyn(sim.q, sim.dq, ddq)
+
+        print(ddq, tau)
 
         sim.joint_0.publish(ddq[0])
         sim.joint_1.publish(ddq[1])
         sim.joint_2.publish(ddq[2])
-        
+
         r.sleep()
-        
+
 elif method == 'pid_task_space':
-    kp = 5
-    kd = 0.3
+    kp = 1
+    kd = 0.1
 
     while not rospy.is_shutdown():
         p_current = kin.p(sim.q).reshape(-1)
         w_current = kin.w(sim.q, sim.dq)[0:3]
         dw = kp * (sim.p_desired - p_current) + kd * (0 - w_current)
-        
+
         ddq = kin.inv_kin_ddq(dw, sim.q, sim.dq)
         ddq = np.where(ddq > 10, 10, np.where(ddq < -10, -10, ddq))
-        
+
+        tau = kin.forward_dyn(sim.q, sim.dq, ddq)
+
+        print(ddq, tau)
+
         sim.joint_0.publish(ddq[0])
         sim.joint_1.publish(ddq[1])
         sim.joint_2.publish(ddq[2])
-        
+
         r.sleep()
-        
+
 # else:
 #     mpc = LinearMPC()
 
