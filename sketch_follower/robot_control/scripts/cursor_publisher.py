@@ -9,13 +9,13 @@ FRAME_HEIGHT = 600
 FRAME_WIDTH = 300
 
 def map_coordinates(x, y, reverse = False):
-    if (not reverse):
-        robot_x = ((FRAME_WIDTH - x) * 2 / FRAME_WIDTH) + 0.5
+    if not reverse:
+        robot_x = (x * 2 / FRAME_WIDTH) + 0.5
         robot_y = ((FRAME_HEIGHT - y) * 4 / FRAME_HEIGHT) - 2
         return robot_x, robot_y
     else:
-        frame_x = - ((y - 0.5) * FRAME_WIDTH / 2 - FRAME_WIDTH)
-        frame_y = - ((x + 2) * FRAME_HEIGHT / 4 - FRAME_HEIGHT)
+        frame_x = (x - 0.5) * FRAME_WIDTH / 2
+        frame_y = - ((y + 2) * FRAME_HEIGHT / 4 - FRAME_HEIGHT)
         return frame_x, frame_y
 
 
@@ -25,8 +25,8 @@ def eef_cb(data):
 
 rospy.init_node("cursor_publisher")
 rospy.set_param('move_robot', False)
-pub = rospy.Publisher("/cursor_position", Pose2D, queue_size=10)
-sub = rospy.Subscriber("/eef_position", Pose2D, eef_cb)
+pub = rospy.Publisher("/sketch_follower/cursor_position", Pose2D, queue_size=10)
+sub = rospy.Subscriber("/sketch_follower/eef_position", Pose2D, eef_cb)
 
 root = Tk()
 root.geometry('400x700')
