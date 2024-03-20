@@ -1,0 +1,22 @@
+robot_arm_joints_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - link_0_joint
+    - link_1_joint
+    - sketch_follower_joint
+  gains:
+    link_0_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    link_1_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    sketch_follower_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1

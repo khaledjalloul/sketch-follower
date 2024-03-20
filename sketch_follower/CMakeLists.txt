@@ -199,8 +199,8 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(arduino_interface robot_control/scripts/old_for_ref/arduino_interface.cpp)
+add_executable(arduino_interface arduino/arduino_interface.cpp)
 target_link_libraries(arduino_interface ${catkin_LIBRARIES})
 
-add_executable(moveit_interface robot_control/scripts/old_for_ref/moveit_interface.cpp)
+add_executable(moveit_interface scripts/moveit_interface.cpp)
 target_link_libraries(moveit_interface ${catkin_LIBRARIES})

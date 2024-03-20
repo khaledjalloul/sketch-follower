@@ -25,5 +25,5 @@ sudo catkin build
 Run the project:
 
 ```
-roslaunch sketch_follower_config demo_gazebo.launch
+roslaunch sketch_follower_moveit demo_gazebo.launch
 ```

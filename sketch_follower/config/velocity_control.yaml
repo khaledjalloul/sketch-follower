@@ -1,0 +1,13 @@
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+joint_0_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: link_0_joint
+  pid: { p: 1.0, i: 0.0, d: 0.0 }
+
+joint_1_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  joint: link_1_joint
+  pid: { p: 1.0, i: 0.0, d: 0.0 }
