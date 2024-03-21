@@ -13,14 +13,14 @@
         <visual>
             <origin xyz="0.0 0.0 0.0" rpy="0 0.0 0.0"/>
             <geometry>
-                 <mesh filename="package://sketch_follower/robot_description/meshes/base_link.stl" scale="${sf} ${sf} ${sf}"/>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/2d_base_link.stl" scale="${sf} ${sf} ${sf}"/>
             </geometry>
             <material name="blue" />
         </visual>
         <collision>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
-                 <mesh filename="package://sketch_follower/robot_description/meshes/base_link.stl" scale="${sf} ${sf} ${sf}"/>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/2d_base_link.stl" scale="${sf} ${sf} ${sf}"/>
             </geometry>
         </collision>
     </link>

@@ -10,23 +10,19 @@ FRAME_WIDTH = 300
 
 def map_coordinates(x, y, reverse = False):
     if not reverse:
-        robot_x = (x * 2 / FRAME_WIDTH) + 0.5
+        robot_x = ((x / FRAME_WIDTH) * 3 + 1.5)
         robot_y = ((FRAME_HEIGHT - y) * 4 / FRAME_HEIGHT) - 2
         return robot_x, robot_y
     else:
-        frame_x = (x - 0.5) * FRAME_WIDTH / 2
+        frame_x = (x - 1.5) * FRAME_WIDTH / 3
         frame_y = - ((y + 2) * FRAME_HEIGHT / 4 - FRAME_HEIGHT)
         return frame_x, frame_y
 
 
 def eef_cb(data):
     frame_x, frame_y = map_coordinates(data.x, data.y, True)
-    frame.create_oval(frame_x-1,frame_y-1,frame_x+1,frame_y+1, fill="#FF9900")
-
-rospy.init_node("cursor_publisher")
-rospy.set_param('move_robot', False)
-pub = rospy.Publisher("/sketch_follower/cursor_position", Pose2D, queue_size=10)
-sub = rospy.Subscriber("/sketch_follower/eef_position", Pose2D, eef_cb)
+    if frame is not None:
+        frame.create_oval(frame_x-1,frame_y-1,frame_x+1,frame_y+1, fill="#FF9900")
 
 root = Tk()
 root.geometry('400x700')
@@ -46,6 +42,11 @@ robot_coordinates_label.pack()
 
 frame = Canvas(root, height=FRAME_HEIGHT, width=FRAME_WIDTH, background="white")
 frame.pack(pady=20)
+
+rospy.init_node("cursor_publisher")
+rospy.set_param('move_robot', False)
+pub = rospy.Publisher("/sketch_follower/cursor_position", Pose2D, queue_size=10)
+sub = rospy.Subscriber("/sketch_follower/eef_position", Pose2D, eef_cb)
 
 i = 0
 recordMotion = False

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
     <group ns="sketch_follower">
-        <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/2d_2dof.xacro" />
-        <arg name="rviz_config_file" default="$(find sketch_follower)/config/2d_2dof.rviz" />
+        <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/3d_4dof.xacro" />
+        <arg name="rviz_config_file" default="$(find sketch_follower)/config/config.rviz" />
 
         <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
 

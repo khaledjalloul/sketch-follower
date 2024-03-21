@@ -7,67 +7,89 @@ from kinematics import Kinematics
 from linear_mpc import LinearMPC
 from ros_interface import ROSInterface
 
+np.set_printoptions(suppress=True)
+np.set_printoptions(precision=3)
+
 kin = Kinematics()
 sim = ROSInterface()
 
 r = rospy.Rate(10)
 
-# method = 'pid_joint_space'
-method = 'pid_task_space'
-# method = 'mpc_task_space'
+method = 'pid'
+# method = 'mpc'
 
+desired_z = 0
+desired_pitch = 0
 
-if method == 'pid_joint_space':
+kp = 2
 
+print("Resetting to home position...")
+
+err = sim.q_reset - sim.q
+
+while np.linalg.norm(err) > 0.1:
+    err = sim.q_reset - sim.q
+    dq = kp * err
+
+    for i in range(4):
+        sim.joint_publishers[i].publish(dq[i])
+
+    r.sleep()
+
+print("Position reset.")
+
+if method == 'pid':
     while not rospy.is_shutdown():
-        q_desired = kin.inv_kin_q(sim.p_desired, sim.q)
-        dq = q_desired - sim.q
-
-        print(dq)
-
-        sim.joint_0.publish(dq[0])
-        sim.joint_1.publish(dq[1])
-
         r.sleep()
+        if sim.desired_position is None:
+            for i in range(4):
+                sim.joint_publishers[i].publish(0)
+            continue
 
-elif method == 'pid_task_space':
-    kp = 2
+        current_pose = kin.p(sim.q)
+        current_position = current_pose[0:3, 3]
+        current_pitch = kin.rot_matrix_to_vector(current_pose[0:3, 0:3])[1]
 
-    while not rospy.is_shutdown():
-        p_current = kin.p(sim.q).reshape(-1)
-        w_current = kin.w(sim.q, sim.dq)[0:3]
-
-        w_desired = kp * (sim.p_desired - p_current)
+        w_desired = kp * (np.r_[sim.desired_position, desired_z, desired_pitch] -
+                          np.r_[current_position, current_pitch])
 
         dq = kin.inv_kin_dq(w_desired, sim.q)
-        dq = np.where(dq > 3, 3, np.where(dq < -3, -3, dq))
+        # dq = kin.inv_kin_dq_pos(w_desired[0:3], sim.q)
 
-        print(dq)
+        print(
+            f"Target: {np.r_[sim.desired_position, desired_z, desired_pitch]}\nDesired: {np.r_[current_position, current_pitch]}\n----")
 
-        sim.joint_0.publish(dq[0])
-        sim.joint_1.publish(dq[1])
-
-        r.sleep()
+        for i in range(4):
+            sim.joint_publishers[i].publish(dq[i])
 
 elif method == 'mpc_task_space':
     mpc = LinearMPC()
 
     while not rospy.is_shutdown():
-        p_current = kin.p(sim.q).reshape(-1)
-        p_desired = sim.p_desired
+        r.sleep()
+        if sim.desired_position is None:
+            for i in range(4):
+                sim.joint_publishers[i].publish(0)
+            continue
 
-        w_star, p_star = mpc.step(p_current, p_desired, [0, 0, 0])
+        current_pose = kin.p(sim.q)
+        current_position = current_pose[0:3, 3]
+        current_pitch = kin.rot_matrix_to_vector(current_pose[0:3, 0:3])[1]
+
+        print(
+            f"Target: {np.r_[sim.desired_position, desired_z, desired_pitch]}\nDesired: {np.r_[current_position, current_pitch]}\n----")
+
+        w_star, p_star = mpc.step(np.r_[current_position, current_pitch],
+                                  np.r_[sim.desired_position,
+                                        desired_z, desired_pitch],
+                                  [0, 0, 0, 0])
 
         if w_star is not None:
             dq = kin.inv_kin_dq(w_star[:, 0], sim.q)
-            dq = np.where(dq > 3, 3, np.where(dq < -3, -3, dq))
 
-            print(dq)
-
-            sim.joint_0.publish(dq[0])
-            sim.joint_1.publish(dq[1])
+            for i in range(4):
+                sim.joint_publishers[i].publish(dq[i])
         else:
             print("Unfeasible")
-            sim.joint_0.publish(0)
-            sim.joint_1.publish(0)
-        r.sleep()
+            for i in range(4):
+                sim.joint_publishers[i].publish(0)

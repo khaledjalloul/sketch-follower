@@ -16,16 +16,16 @@
         
         <rosparam command="load" file='$(find sketch_follower)/config/$(arg control_mode)_control.yaml'/>
 
-        <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/2d_2dof.xacro" />
+        <param name="robot_description" command="xacro $(find sketch_follower)/robot_description/urdf/3d_4dof.xacro" />
 
-        <node pkg="gazebo_ros" name="spawn_urdf" type="spawn_model" args="-urdf -model sketch_follower_2d_2dof -param robot_description"/>
+        <node pkg="gazebo_ros" name="spawn_urdf" type="spawn_model" args="-urdf -model sketch_follower_3d_4dof -param robot_description"/>
 
         <node name='controller_spawner' pkg='controller_manager' type='spawner' respawn='false' output='screen'
             args='joint_state_controller joint_0_effort_controller joint_1_effort_controller joint_2_effort_controller'
             if="$(eval arg('control_mode') == 'effort')" />
 
         <node name='controller_spawner' pkg='controller_manager' type='spawner' respawn='false' output='screen'
-            args='joint_state_controller joint_0_velocity_controller joint_1_velocity_controller'
+            args='joint_state_controller joint_0_velocity_controller joint_1_velocity_controller joint_2_velocity_controller joint_3_velocity_controller'
             if="$(eval arg('control_mode') == 'velocity')"  />
 
         <node name='robot_state_publisher' pkg='robot_state_publisher' type='robot_state_publisher' respawn='false' output='screen' />
@@ -33,8 +33,6 @@
         <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" />
 
         <node name="cursor_publisher" pkg="sketch_follower" type="cursor_publisher.py" output="screen"/>
-
-        <!-- <node name="controller" pkg="sketch_follower" type="controller.py" output="screen"/> -->
     </group>
 
 

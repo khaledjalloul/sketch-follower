@@ -22,14 +22,14 @@
             <visual>
                 <origin xyz="0 0.0 0.0" rpy="0.0 0.0 0.0"/>
                 <geometry>
-                    <mesh filename="package://sketch_follower/robot_description/meshes/link.stl" scale="${sf} ${sf} ${sf}"/>
+                    <mesh filename="package://sketch_follower/robot_description/meshes/2d_link.stl" scale="${sf} ${sf} ${sf}"/>
                 </geometry>
                 <material name="${material}" />
             </visual>
             <collision>
                 <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
                 <geometry>
-                    <mesh filename="package://sketch_follower/robot_description/meshes/link.stl" scale="${sf} ${sf} ${sf}"/>
+                    <mesh filename="package://sketch_follower/robot_description/meshes/2d_link.stl" scale="${sf} ${sf} ${sf}"/>
                 </geometry>
             </collision>
         </link>

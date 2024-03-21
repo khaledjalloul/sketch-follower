@@ -1,14 +1,18 @@
 # Sketch Follower
 
-A simple 2-DOF robot arm designed to learn Moveit and inverse kinematics.
+A 4-DOF robot arm Gazebo simulation created to learn CAD modeling, inverse kinematics, and ROS Control.
 
-The arm was designed using Fusion 360, then a URDF file was assembled based on the exported meshes. Using the Moveit_setup_assistant, the robot package was generated and tested on Rviz and Gazebo.
+The arm was designed using Fusion 360 then assembled through URDF and Xacro. The main Python scripts include:
 
-A simple Python Tkinter GUI was built on which a sketch can be drawn. Then, a C++ controller that uses the MoveGroup library was written to receive the sketch trajectory points and compute a cartesian path to mimic the sketch.
+- **cursor_publisher.py**: Tkinter GUI that records and publishes the cursor position when pressed and displays the current end effector position.
+- **ros_interface.py**: Subscribes to the cursor publisher and the simulation joint states, and publishes the joint velocities to the simulation.
+- **kinematics.py**: Describes the robot kinematics using numpy and solves the inverse kinematics problem.
+- **controller.py**: Controls the Gazebo simulation by reading the desired pose, obtaining the desired joint velocities, then publishing them.
 
-<img src=./sketch_follower/robot_description/demo.gif width=100% style="margin-bottom: 10px">
+<br/>
+<img src=./sketch_follower/robot_description/3d_demo.gif width=100%>
 
-## How to Launch
+## Demo
 
 For a demo, make sure the ROS Control packages are installed. To install them:
 
@@ -22,8 +26,13 @@ Clone the repository and build the catkin packages:
 sudo catkin build
 ```
 
-Run the project:
+Run Gazebo:
 
 ```
-roslaunch sketch_follower_moveit demo_gazebo.launch
+roslaunch sketch_follower gazebo.launch
+```
+
+Run the Python controller:
+```
+rosrun sketch_follower controller.py
 ```

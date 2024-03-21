@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="sketch_follower_3d_4dof">
+    <xacro:include filename="$(find sketch_follower)/robot_description/urdf/helpers.xacro"/>
+
+    <xacro:property name="sf" value="0.02"/>
+
+    <gazebo>
+        <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control" />
+    </gazebo>
+
+    <link name="world" />
+
+    <link name="base">
+        <xacro:inertial m="1.2" x="1.6" y="1.6" z="0.6" oy="0" oz="0.3" />
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_base_link.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+            <material name="blue" />
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_base_link.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="base">
+        <material>Gazebo/White</material>
+    </gazebo>
+
+    <joint name="base_joint" type="fixed">
+        <origin xyz="0.0 0.0 0" rpy="0.0 0.0 0"/>
+        <parent link="world"/>
+        <child link="base"/>
+    </joint>
+
+    <link name="base_arm_slot">
+        <xacro:inertial m="1.2" x="1.2" y="1.2" z="0.8" oy="0" oz="0.4" />
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_base_arm_slot.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+            <material name="green" />
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_base_arm_slot.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="base_arm_slot">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    
+    <joint name="base_arm_slot_joint" type="continuous">
+        <origin xyz="0.0 0.0 0.6" rpy="0.0 0.0 0.0"/>
+        <parent link="base"/>
+        <child link="base_arm_slot"/>
+        <axis xyz="0.0 0.0 1.0"/>
+        <dynamics damping="2.0" friction="2.0"/>
+    </joint>
+    <xacro:transmission name="base_arm_slot_joint" />
+    
+    <link name="arm_link_1">
+        <xacro:inertial m="1.2" x="0.7" y="0.4" z="2" oy="0" oz="1" />
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57079 0.0 3.141592"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_arm_link.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+            <material name="red" />
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57079 0.0 3.141592"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_arm_link.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <gazebo reference="arm_link_1">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="arm_link_1_joint" type="continuous">
+        <origin xyz="0.0 -0.1 0.8" rpy="0.0 0.0 0.0"/>
+        <parent link="base_arm_slot"/>
+        <child link="arm_link_1"/>
+        <axis xyz="0.0 1.0 0.0"/>
+        <dynamics damping="2.0" friction="2.0"/>
+    </joint>
+    <xacro:transmission name="arm_link_1_joint" />
+    
+    <link name="arm_link_2">
+        <xacro:inertial m="1.2" x="0.7" y="0.4" z="2" oy="0" oz="1" />
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57079 0.0 0.0"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_arm_link.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+            <material name="purple" />
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57079 0.0 0.0"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_arm_link.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <gazebo reference="arm_link_2">
+        <material>Gazebo/Black</material>
+    </gazebo>
+    
+    <joint name="arm_link_2_joint" type="continuous">
+        <origin xyz="0.0 0.4 2.0" rpy="0.0 0.0 0.0"/>
+        <parent link="arm_link_1"/>
+        <child link="arm_link_2"/>
+        <axis xyz="0.0 1.0 0.0"/>
+        <dynamics damping="2.0" friction="2.0"/>
+    </joint>
+    <xacro:transmission name="arm_link_2_joint" />
+    
+    <link name="end_effector">
+        <xacro:inertial m="1.2" x="1" y="0.4" z="1" oy="0" oz="0.5" />
+        <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57079 0.0 3.141592"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_end_effector.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+            <material name="blue" />
+        </visual>
+        <collision>
+            <origin xyz="0.0 0.0 0.0" rpy="1.57079 0.0 3.141592"/>
+            <geometry>
+                 <mesh filename="package://sketch_follower/robot_description/meshes/3d_end_effector.stl" scale="${sf} ${sf} ${sf}"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <gazebo reference="end_effector">
+        <material>Gazebo/White</material>
+    </gazebo>
+    
+    <joint name="end_effector_joint" type="continuous">
+        <origin xyz="0.0 -0.4 2.0" rpy="0.0 0.0 0.0"/>
+        <parent link="arm_link_2"/>
+        <child link="end_effector"/>
+        <axis xyz="0.0 1.0 0.0"/>
+        <dynamics damping="2.0" friction="2.0"/>
+    </joint>
+    <xacro:transmission name="end_effector_joint" />
+
+</robot>
