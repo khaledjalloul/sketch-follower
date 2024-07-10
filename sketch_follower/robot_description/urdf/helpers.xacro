@@ -58,4 +58,6 @@
         </transmission>
     </xacro:macro>
     
+    <!-- EffortJointInterface -->
+    
 </robot>

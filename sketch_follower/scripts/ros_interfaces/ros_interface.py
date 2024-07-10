@@ -5,7 +5,7 @@ from typing import List
 from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Pose, Pose2D
-from kinematics import Kinematics
+from model.kinematics import Kinematics
 
 
 class ROSInterface:
@@ -32,6 +32,7 @@ class ROSInterface:
             "/sketch_follower/eef_position", Pose2D, queue_size=10)
 
         self.joint_publishers: List[rospy.topics.Publisher] = []
+        self.r = rospy.Rate(10)
 
         for i in range(4):
             self.joint_publishers.append(rospy.topics.Publisher(

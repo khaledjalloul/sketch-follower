@@ -202,5 +202,5 @@ include_directories(
 add_executable(arduino_interface arduino/arduino_interface.cpp)
 target_link_libraries(arduino_interface ${catkin_LIBRARIES})
 
-add_executable(moveit_interface scripts/moveit_interface.cpp)
+add_executable(moveit_interface scripts/ros/moveit_interface.cpp)
 target_link_libraries(moveit_interface ${catkin_LIBRARIES})

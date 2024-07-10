@@ -5,27 +5,22 @@ import numpy as np
 class LinearMPC:
     def __init__(self):
         K = 5
+        nx = 4
+        self.nu = 4
 
-        A = np.array([[1, 0, 0, 0],
-                      [0, 1, 0, 0],
-                      [0, 0, 1, 0],
-                      [0, 0, 0, 1]])
+        A = np.eye(nx)
+        B = np.eye(self.nu)
 
-        B = np.array([[1, 0, 0, 0],
-                      [0, 1, 0, 0],
-                      [0, 0, 1, 0],
-                      [0, 0, 0, 1]])
+        Q = 1
+        R = 0.01
+        S = 3
 
-        Q = 10
-        R = 10
-        S = 10
+        self.x = cp.Variable((nx, K + 1))    # x, y, z, pitch
+        self.u = cp.Variable((self.nu, K))        # dx, dy, dz, dpitch
 
-        self.x = cp.Variable((4, K + 1))    # x, y, z, pitch
-        self.u = cp.Variable((4, K))        # dx, dy, dz, dpitch
-
-        self.x0 = cp.Parameter(4)
-        self.xf = cp.Parameter(4)
-        self.uf = cp.Parameter(4)
+        self.x0 = cp.Parameter(nx)
+        self.xf = cp.Parameter(nx)
+        self.uf = cp.Parameter(self.nu)
 
         cost = S * cp.sum_squares(self.x[:, K])
         constraints = [
@@ -45,14 +40,20 @@ class LinearMPC:
 
         self.prob = cp.Problem(cp.Minimize(cost), constraints)
 
-    def step(self, x0, xf, uf):
+    def step(self, x0, x_ss, u_ss):
         self.x0.value = x0
-        self.xf.value = xf
-        self.uf.value = uf
+        self.xf.value = x_ss
+        self.uf.value = u_ss
 
         self.prob.solve(solver=cp.ECOS)
 
-        return self.u.value, self.x.value
+        u_out = self.u.value
+
+        if u_out is not None:
+            return u_out[:, 0]
+        else:
+            print("Infeasible")
+            return np.zeros(self.nu)
 
 
 if __name__ == "__main__":
@@ -62,5 +63,5 @@ if __name__ == "__main__":
     xf = np.array([3., 0, 0, 0.3])
     uf = np.array([0., 0, 0, 0])
 
-    u, x = t_mpc.step(x0, xf, uf)
-    print(x[:, -1])
+    u = t_mpc.step(x0, xf, uf)
+    print(u)
