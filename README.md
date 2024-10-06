@@ -10,29 +10,12 @@ The arm was designed using Fusion 360 then assembled through URDF and Xacro. The
 - **controller.py**: Controls the Gazebo simulation by reading the desired pose, obtaining the desired joint velocities, then publishing them.
 
 <br/>
-<img src=./sketch_follower/robot_description/3d_demo.gif width=100%>
+<img src=./robot_description/3d_demo.gif width=100%>
 
-## Demo
+## Demo (ROS 1)
 
-For a demo, make sure the ROS Control packages are installed. To install them:
-
-```
-sudo apt-get install ros-noetic-ros-control ros-noetic-ros-controllers
-```
-
-Clone the repository and build the catkin packages:
+For a demo, simply run docker compose inside the project:
 
 ```
-sudo catkin build
-```
-
-Run Gazebo:
-
-```
-roslaunch sketch_follower gazebo.launch
-```
-
-Run the Python controller:
-```
-rosrun sketch_follower controller.py
+docker compose up
 ```

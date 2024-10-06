@@ -1,0 +1,11 @@
+services:
+  sketch-follower:
+    container_name: sketch-follower
+    image: sketch-follower:latest
+    build:
+      context: .
+    volumes:
+      - .:/home/catkin_ws/src/sketch_follower
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    tty: true
+    entrypoint: ["/bin/bash", "-c", "source devel/setup.bash && roslaunch sketch_follower gazebo.launch"]

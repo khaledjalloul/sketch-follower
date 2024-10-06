@@ -60,8 +60,8 @@ while not rospy.is_shutdown():
     dq = kin.inv_kin_dq(w_desired, sim.q)
     # dq = kin.inv_kin_dq_pos(w_desired[0:3], sim.q)
 
-    print(
-        f"Target: {np.r_[sim.desired_position, desired_z, desired_pitch]}\nDesired: {np.r_[current_position, current_pitch]}\n----")
+    # print(
+    #     f"Target: {np.r_[sim.desired_position, desired_z, desired_pitch]}\nDesired: {np.r_[current_position, current_pitch]}\n----")
 
     for i in range(4):
         sim.joint_publishers[i].publish(dq[i])

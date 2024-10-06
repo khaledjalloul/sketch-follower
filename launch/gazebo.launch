@@ -33,6 +33,8 @@
         <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" />
 
         <node name="cursor_publisher" pkg="sketch_follower" type="cursor_publisher.py" output="screen"/>
+
+        <node name="controller" pkg="sketch_follower" type="controller.py" output="screen"/>
     </group>
 
 

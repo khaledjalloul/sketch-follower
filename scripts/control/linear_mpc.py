@@ -52,7 +52,7 @@ class LinearMPC:
         if u_out is not None:
             return u_out[:, 0]
         else:
-            print("Infeasible")
+            # print("Infeasible")
             return np.zeros(self.nu)
 
 

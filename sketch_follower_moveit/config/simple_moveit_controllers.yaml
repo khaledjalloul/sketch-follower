@@ -1,9 +1,0 @@
-controller_list:
-  - name: robot_arm_joints_controller
-    action_ns: follow_joint_trajectory
-    type: FollowJointTrajectory
-    default: True
-    joints:
-      - link_0_joint
-      - link_1_joint
-      - sketch_follower_joint

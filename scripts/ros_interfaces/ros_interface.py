@@ -13,7 +13,11 @@ class ROSInterface:
         rospy.init_node("controller")
 
         control_mode = rospy.get_param('/sketch_follower/control_mode')
-
+        
+        rospy.loginfo("Python controller waiting for Gazebo to start...")
+        rospy.wait_for_service('/gazebo/set_physics_properties')
+        rospy.loginfo("Python controller starting...")
+        
         self.kin = Kinematics()
 
         self.q = np.zeros(4)
