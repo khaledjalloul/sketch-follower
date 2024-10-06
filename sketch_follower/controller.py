@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import rospy
+import rclpy
 
-from model.kinematics import Kinematics
-from control.pid import PID
-from control.linear_mpc import LinearMPC
-from control.deepc import DeePC
-from ros_interfaces.ros_interface import ROSInterface
+from sketch_follower.model.kinematics import Kinematics
+from sketch_follower.control.pid import PID
+from sketch_follower.control.linear_mpc import LinearMPC
+from sketch_follower.control.deepc import DeePC
+from sketch_follower.ros.ros_interface import ROSInterface
+
+from std_msgs.msg import Float64
 
 np.set_printoptions(suppress=True)
 np.set_printoptions(precision=3)
@@ -31,7 +33,8 @@ while np.linalg.norm(err) > 0.1:
     dq = 2 * err
 
     for i in range(4):
-        sim.joint_publishers[i].publish(dq[i])
+        msg = Float64(data=dq[i])
+        sim.joint_publishers[i].publish(msg)
 
     sim.r.sleep()
 
@@ -39,7 +42,7 @@ print("Position reset.")
 
 # controller.construct_hankel_matrices(kin, sim)
 
-while not rospy.is_shutdown():
+while rclpy.ok():
     sim.r.sleep()
 
     if sim.desired_position is None:
@@ -64,4 +67,5 @@ while not rospy.is_shutdown():
     #     f"Target: {np.r_[sim.desired_position, desired_z, desired_pitch]}\nDesired: {np.r_[current_position, current_pitch]}\n----")
 
     for i in range(4):
-        sim.joint_publishers[i].publish(dq[i])
+        msg = Float64(data=dq[i])
+        sim.joint_publishers[i].publish(msg)

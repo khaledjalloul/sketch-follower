@@ -1,5 +1,5 @@
 import numpy as np
-from kinematics import Kinematics
+from sketch_follower.model.kinematics import Kinematics
 
 
 class Dynamics(Kinematics):
