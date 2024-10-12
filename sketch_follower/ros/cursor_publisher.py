@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from tkinter import *
+import threading
 
 import rclpy
 from rclpy import node, parameter
@@ -58,6 +59,9 @@ sub = cursor_node.create_subscription(
     Pose2D, "/sketch_follower/eef_position", eef_cb, 10
 )
 
+thread = threading.Thread(target=rclpy.spin, args=(cursor_node,), daemon=True)
+thread.start()
+
 i = 0
 recordMotion = False
 waypoints = []
@@ -98,3 +102,5 @@ frame.bind("<ButtonPress-1>", mouseDown)
 frame.bind("<ButtonRelease-1>", mouseUp)
 
 root.mainloop()
+
+thread.join()

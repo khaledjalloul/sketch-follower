@@ -14,7 +14,6 @@ install(DIRECTORY
   launch
   config
   robot_description
-  models
   DESTINATION share/${PROJECT_NAME}
 )
 

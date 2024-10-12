@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="sketch_follower_ros2_control">
+    <ros2_control name="sketch_follower" type="system">
+
+      <hardware>
+        <plugin>mock_components/GenericSystem</plugin>
+        <param name="calculate_dynamics">true</param>
+      </hardware>
+
+      <joint name="base_arm_slot_joint">
+        <command_interface name="velocity" />
+        <state_interface name="position" />
+      </joint>
+
+      <joint name="arm_link_1_joint">
+        <command_interface name="velocity" />
+        <state_interface name="position" />
+      </joint>
+
+      <joint name="arm_link_2_joint">
+        <command_interface name="velocity" />
+        <state_interface name="position" />
+      </joint>
+
+      <joint name="end_effector_joint">
+        <command_interface name="velocity" />
+        <state_interface name="position" />
+      </joint>
+
+    </ros2_control>
+  </xacro:macro>
+</robot>

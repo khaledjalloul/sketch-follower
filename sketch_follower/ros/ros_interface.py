@@ -1,12 +1,12 @@
 import numpy as np
-from typing import List
+import threading
 
 import rclpy
 from rclpy import node
 
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
-from geometry_msgs.msg import Pose, Pose2D
+from geometry_msgs.msg import Pose2D
 
 from sketch_follower.model.kinematics import Kinematics
 
@@ -16,27 +16,20 @@ class ROSInterface:
         rclpy.init()
         interface_node = node.Node("controller")
 
-        interface_node.declare_parameter("control_mode", "")
+        interface_node.declare_parameter("control_mode", "velocity")
         control_mode = interface_node.get_parameter("control_mode").value
 
-        interface_node.get_logger().info(
-            "Python controller waiting for Gazebo to start..."
-        )
-        # dummy_client = interface_node.create_client(
-        #     SetPhysicsProperties, "/gazebo/set_physics_properties"
-        # )
         interface_node.get_logger().info("Python controller starting...")
 
         self.kin = Kinematics()
 
         self.q = np.zeros(4)
         self.dq = np.zeros(4)
-        self.q_reset = [0, -0.5, 2, -1.5]
 
         self.desired_position = None
 
         interface_node.create_subscription(
-            JointState, "/sketch_follower/joint_states", self.joint_states_cb, 10
+            JointState, "/joint_states", self.joint_states_cb, 10
         )
 
         interface_node.create_subscription(
@@ -47,22 +40,27 @@ class ROSInterface:
             Pose2D, "/sketch_follower/eef_position", 10
         )
 
-        self.joint_publishers: List[rclpy.publisher.Publisher] = []
+        self.joint_publisher = interface_node.create_publisher(
+            Float64MultiArray,
+            f"/sketch_follower/{control_mode}_controller/commands",
+            10,
+        )
+
         self.r = interface_node.create_rate(10)
 
-        for i in range(4):
-            self.joint_publishers.append(
-                interface_node.create_publisher(
-                    Float64,
-                    f"/sketch_follower/joint_{i}_{control_mode}_controller/command",
-                    10,
-                )
-            )
+        self.thread = threading.Thread(
+            target=rclpy.spin, args=(interface_node,), daemon=True
+        )
+        self.thread.start()
+
+    def __del__(self):
+        rclpy.shutdown()
+        self.thread.join()
 
     def joint_states_cb(self, data: JointState):
-        self.q[1] = data.position[0]
-        self.q[2] = data.position[1]
-        self.q[0] = data.position[2]
+        self.q[0] = data.position[0]
+        self.q[1] = data.position[1]
+        self.q[2] = data.position[2]
         self.q[3] = data.position[3]
 
         self.q = self.q % (2 * np.pi)

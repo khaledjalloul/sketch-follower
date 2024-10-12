@@ -15,7 +15,7 @@ class DeePC:
         self.Q = np.eye(self.ny * self.T_fut)
         self.R = np.eye(self.nu * self.T_fut) * 0.1
         self.slack_cost = 1000
-        
+
         self.y_past = np.zeros((self.ny, self.T_prev))
         self.u_past = np.zeros((self.nu, self.T_prev))
 
@@ -26,8 +26,7 @@ class DeePC:
         for i in range(self.T):
             u = u_sim[:, i]
 
-            for j in range(4):
-                sim.joint_publishers[j].publish(u[j])
+            sim.joint_publisher.publish(u)
 
             current_pose = kin.p(sim.q)
             current_position = current_pose[0:3, 3]
@@ -41,19 +40,19 @@ class DeePC:
         self.Hy = np.zeros((self.ny * self.L, self.num_hankel_columns))
 
         for i in range(self.num_hankel_columns):
-            self.Hu[:, i] = u_sim[:, i:i+self.L].T.reshape(-1)
-            self.Hy[:, i] = y_sim[:, i:i+self.L].T.reshape(-1)
-            
+            self.Hu[:, i] = u_sim[:, i : i + self.L].T.reshape(-1)
+            self.Hy[:, i] = y_sim[:, i : i + self.L].T.reshape(-1)
+
         print(self.Hu)
         print(self.Hy)
 
-    def step(self, x0, x_ss, u_ss):        
+    def step(self, x0, x_ss, u_ss):
         self.y_past = np.append(self.y_past[:, 1:], x0)
-        
-        U_p = self.Hu[:self.nu*self.T_prev]
-        U_f = self.Hu[-self.nu*self.T_fut:]
-        Y_p = self.Hy[:self.ny*self.T_prev]
-        Y_f = self.Hy[-self.ny*self.T_fut:]
+
+        U_p = self.Hu[: self.nu * self.T_prev]
+        U_f = self.Hu[-self.nu * self.T_fut :]
+        Y_p = self.Hy[: self.ny * self.T_prev]
+        Y_f = self.Hy[-self.ny * self.T_fut :]
 
         u_past = self.u_past.T.reshape(-1)
         y_past = self.y_past.T.reshape(-1)
@@ -62,12 +61,15 @@ class DeePC:
         u_ss = np.tile(u_ss, self.T_fut)
 
         g = cp.Variable(self.num_hankel_columns)
-        u = cp.Variable(self.nu*self.T_fut)
-        y = cp.Variable(self.ny*self.T_fut)
-        s = cp.Variable(self.nu*self.T_fut)
+        u = cp.Variable(self.nu * self.T_fut)
+        y = cp.Variable(self.ny * self.T_fut)
+        s = cp.Variable(self.nu * self.T_fut)
 
-        cost = cp.quad_form(y - x_ss, self.Q) + \
-            cp.quad_form(u - u_ss, self.R) + cp.norm1(s)
+        cost = (
+            cp.quad_form(y - x_ss, self.Q)
+            + cp.quad_form(u - u_ss, self.R)
+            + cp.norm1(s)
+        )
 
         constraints = [
             U_p @ g == u_past,
@@ -75,7 +77,7 @@ class DeePC:
             Y_p @ g == y_past,
             Y_f @ g == y,
             cp.norm_inf(u) <= 3,
-            s >= 0
+            s >= 0,
         ]
 
         prob = cp.Problem(cp.Minimize(cost), constraints)
@@ -84,7 +86,7 @@ class DeePC:
         u_out = np.zeros(self.nu)
 
         if not np.isinf(result):
-            u_out = u.value[:self.nu]
-            
+            u_out = u.value[: self.nu]
+
         self.u_past = np.append(self.u_past[:, 1:], u_out)
         return u_out

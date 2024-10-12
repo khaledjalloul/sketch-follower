@@ -11,14 +11,13 @@ def generate_launch_description():
         Path(get_package_share_directory("sketch_follower")) / "config" / "config.rviz"
     )
 
-    xacro_file = (
+    xacro_file_path = (
         Path(get_package_share_directory("sketch_follower"))
         / "robot_description"
         / "urdf"
-        / "3d_4dof.xacro"
+        / "model.xacro"
     )
-
-    urdf_output = ParameterValue(Command(["xacro ", str(xacro_file)]))
+    robot_description = ParameterValue(Command(["xacro ", str(xacro_file_path)]))
 
     return LaunchDescription(
         [
@@ -36,7 +35,7 @@ def generate_launch_description():
                 parameters=[
                     {
                         "use_sim_time": True,
-                        "robot_description": urdf_output,
+                        "robot_description": robot_description,
                     },
                 ],
             ),

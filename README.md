@@ -10,12 +10,15 @@ The arm was designed using Fusion 360 then assembled through URDF and Xacro. The
 - **controller.py**: Controls the Gazebo simulation by reading the desired pose, obtaining the desired joint velocities, then publishing them.
 
 <br/>
-<img src=./robot_description/3d_demo.gif width=100%>
+<img src=./media/3d_demo.gif width=100%>
 
-## Demo (ROS 1)
+## Demo
 
-For a demo, simply run docker compose inside the project:
+For a demo, install the necessary dependencies (TODO), build the colcon workspace, and run the `rviz_controller` launch file:
 
 ```
-docker compose up
+ros2 launch sketch_follower rviz_controller.launch.py
 ```
+
+### [ROS 1 Version](https://github.com/khaledjalloul/sketch-follower_ros/tree/ros1)
+
