@@ -20,5 +20,3 @@ RUN rosdep install --from-paths src --ignore-src -y
 RUN catkin config --extend /opt/ros/noetic
 RUN catkin build
 RUN echo "source /home/catkin_ws/devel/setup.bash" >> /root/.bashrc
-
-ENV DISPLAY=:1

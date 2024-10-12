@@ -1,3 +1,4 @@
+import time
 import rospy
 import numpy as np
 from typing import List
@@ -17,6 +18,7 @@ class ROSInterface:
         rospy.loginfo("Python controller waiting for Gazebo to start...")
         rospy.wait_for_service('/gazebo/set_physics_properties')
         rospy.loginfo("Python controller starting...")
+        time.sleep(5)
         
         self.kin = Kinematics()
 
