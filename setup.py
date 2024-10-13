@@ -32,6 +32,7 @@ setup(
         "console_scripts": [
             "cursor_publisher = sketch_follower.ros.cursor_publisher",
             "controller = sketch_follower.controller",
+            "teleop = sketch_follower.teleop",
         ],
     },
 )

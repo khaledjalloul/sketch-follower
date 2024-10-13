@@ -46,7 +46,7 @@ class ROSInterface:
             10,
         )
 
-        self.r = interface_node.create_rate(10)
+        self.r = interface_node.create_rate(20)
 
         self.thread = threading.Thread(
             target=rclpy.spin, args=(interface_node,), daemon=True

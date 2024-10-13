@@ -58,7 +58,7 @@ while rclpy.ok():
 
     w_desired = controller.step(x0, x_ss, u_ss)
 
-    dq = kin.inv_kin_dq(w_desired, sim.q)
+    dq = kin.inv_kin_dq(w_desired, sim.q, target='position_and_pitch')
 
     msg = Float64MultiArray(data=dq)
     sim.joint_publisher.publish(msg)

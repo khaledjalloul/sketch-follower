@@ -122,15 +122,15 @@ class Kinematics:
 
         return q
 
-    def inv_kin_dq(self, w_desired, q) -> np.ndarray:
-        J = self.J(q)[[0, 1, 2, 4], :]
-        dq = (np.linalg.pinv(J, 0.1) @ w_desired)
+    def inv_kin_dq(self, w_desired, q, target=None) -> np.ndarray:
+        J = self.J(q)
 
-        return dq
+        if target == "position":
+            J = J[0:3]
+        elif target == "position_and_pitch":
+            J = J[[0, 1, 2, 4], :]
 
-    def inv_kin_dq_pos(self, w_desired, q) -> np.ndarray:
-        J = self.J(q)[0:3]
-        dq = (np.linalg.pinv(J, 0.1) @ w_desired)
+        dq = np.linalg.pinv(J, 0.1) @ w_desired
 
         return dq
 
