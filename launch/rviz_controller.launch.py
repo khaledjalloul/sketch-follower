@@ -13,6 +13,12 @@ def generate_launch_description():
         Path(get_package_share_directory("sketch_follower")) / "config" / "config.rviz"
     )
 
+    robot_controllers = (
+        Path(get_package_share_directory("sketch_follower"))
+        / "config"
+        / "velocity_control.yaml"
+    )
+
     xacro_file_path = (
         Path(get_package_share_directory("sketch_follower"))
         / "robot_description"
@@ -20,12 +26,6 @@ def generate_launch_description():
         / "model.xacro"
     )
     robot_description = ParameterValue(Command(["xacro ", str(xacro_file_path)]))
-
-    robot_controllers = (
-        Path(get_package_share_directory("sketch_follower"))
-        / "config"
-        / "velocity_control.yaml"
-    )
 
     remappings = [
         (
@@ -91,14 +91,14 @@ def generate_launch_description():
 
     cursor_publisher_node = Node(
         package="sketch_follower",
-        executable="cursor_publisher.py",
+        executable="cursor_publisher",
         name="cursor_publisher",
         output="screen",
     )
 
     controller_node = Node(
         package="sketch_follower",
-        executable="controller.py",
+        executable="controller",
         name="controller",
         output="screen",
     )
