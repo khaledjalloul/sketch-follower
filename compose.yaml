@@ -1,11 +1,10 @@
 services:
-  sketch-follower:
+  sketch-follower-ros1:
     container_name: sketch-follower
-    image: sketch-follower:latest
+    image: sketch-follower:ros1
     build:
       context: .
     volumes:
-      - .:/home/catkin_ws/src/sketch_follower
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
       - DISPLAY=${DISPLAY}

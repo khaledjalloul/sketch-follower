@@ -10,11 +10,11 @@ The arm was designed using Fusion 360 then assembled through URDF and Xacro. The
 - **controller.py**: Controls the Gazebo simulation by reading the desired pose, obtaining the desired joint velocities, then publishing them.
 
 <br/>
-<img src=./robot_description/3d_demo.gif width=100%>
+<img src=./media/3d_demo.gif width=100%>
 
-## Demo (ROS 1)
+## Demo
 
-For a demo, simply run docker compose inside the project:
+For a demo, run docker compose inside the project:
 
 ```
 docker compose up
