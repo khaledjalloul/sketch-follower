@@ -1,24 +1,20 @@
-FROM ros:noetic-ros-core
+FROM ros:jazzy-ros-core
 
 RUN apt update
-RUN apt-get install build-essential python3-catkin-tools python3-pip python3-tk -y
-RUN pip3 install -U rosdep cvxpy
+RUN apt install -y python3-colcon-common-extensions build-essential \
+    ros-jazzy-ros2-control ros-jazzy-ros2-controllers ros-jazzy-robot-state-publisher \
+    ros-jazzy-xacro ros-jazzy-rviz2 python3-pip python3-virtualenv python3-tk
 
-RUN apt-get install ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control \
-    ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-xacro \
-    ros-noetic-robot-state-publisher ros-noetic-joint-state-publisher -y
+RUN addgroup realtime
+RUN usermod -a -G realtime $(whoami)
 
-RUN mkdir -p /home/catkin_ws/src/sketch_follower
-COPY . /home/catkin_ws/src/sketch_follower
+RUN mkdir -p /home/colcon_ws/src/sketch_follower
+WORKDIR /home/colcon_ws
 
-WORKDIR /home/catkin_ws
+RUN virtualenv env
+RUN touch env/COLCON_IGNORE
+RUN . env/bin/activate && pip3 install cvxpy pyyaml
 
-RUN rosdep init
-RUN rosdep update
-RUN rosdep install --from-paths src --ignore-src -y
+COPY . src/sketch_follower
 
-RUN catkin config --extend /opt/ros/noetic
-RUN catkin build
-RUN echo "source /home/catkin_ws/devel/setup.bash" >> /root/.bashrc
-
-ENV DISPLAY=:1
+RUN . /opt/ros/jazzy/setup.sh && colcon build

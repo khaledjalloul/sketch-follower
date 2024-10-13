@@ -27,46 +27,52 @@ def generate_launch_description():
         / "velocity_control.yaml"
     )
 
+    remappings = [
+        (
+            "/velocity_controller/commands",
+            "/sketch_follower/velocity_controller/commands",
+        ),
+        (
+            "/joint_states",
+            "/sketch_follower/joint_states",
+        ),
+    ]
+
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         output="both",
         parameters=[str(robot_controllers)],
-        remappings=[
-            (
-                "/velocity_controller/commands",
-                "/sketch_follower/velocity_controller/commands",
-            ),
-        ],
+        remappings=remappings,
     )
+
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
         parameters=[{"robot_description": robot_description}],
-        # remappings=[
-        #     (
-        #         "/joint_states",
-        #         "/sketch_follower/joint_states",
-        #     ),
-        # ],
+        remappings=remappings,
     )
+
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         arguments=["-d", str(rviz_config_file)],
+        remappings=remappings,
     )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster"],
+        remappings=remappings,
     )
 
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["velocity_controller", "--param-file", str(robot_controllers)],
+        remappings=remappings,
     )
 
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(

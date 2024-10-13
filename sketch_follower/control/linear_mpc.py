@@ -4,7 +4,7 @@ import numpy as np
 
 class LinearMPC:
     def __init__(self):
-        K = 5
+        K = 3
         nx = 4
         self.nu = 4
 
@@ -15,28 +15,29 @@ class LinearMPC:
         R = 0.01
         S = 3
 
-        self.x = cp.Variable((nx, K + 1))    # x, y, z, pitch
-        self.u = cp.Variable((self.nu, K))        # dx, dy, dz, dpitch
+        self.x = cp.Variable((nx, K + 1))  # x, y, z, pitch
+        self.u = cp.Variable((self.nu, K))  # dx, dy, dz, dpitch
 
         self.x0 = cp.Parameter(nx)
         self.xf = cp.Parameter(nx)
         self.uf = cp.Parameter(self.nu)
 
-        cost = S * cp.sum_squares(self.x[:, K])
+        cost = 0
         constraints = [
             self.x[:, 0] == self.x0,
             self.x[:, K] == self.xf,
-            self.u[:, K - 1] == self.uf
+            self.u[:, K - 1] == self.uf,
         ]
 
         for k in range(K):
-            cost += Q * cp.sum_squares(self.x[:, k] - self.xf) + \
-                R * cp.sum_squares(self.u[:, k])
+            cost += Q * cp.sum_squares(self.x[:, k] - self.xf) + R * cp.sum_squares(
+                self.u[:, k]
+            )
 
-            constraints += [self.x[:, k + 1] == A @
-                            self.x[:, k] + B @ self.u[:, k],
-                            cp.norm(self.x[:, k + 1], 2) <= 4.5
-                            ]
+            constraints += [
+                self.x[:, k + 1] == A @ self.x[:, k] + B @ self.u[:, k],
+                cp.norm(self.x[:, k + 1], 2) <= 4.5,
+            ]
 
         self.prob = cp.Problem(cp.Minimize(cost), constraints)
 
@@ -59,9 +60,9 @@ class LinearMPC:
 if __name__ == "__main__":
     t_mpc = LinearMPC()
 
-    x0 = np.array([0., 4.5, 0, 0])
-    xf = np.array([3., 0, 0, 0.3])
-    uf = np.array([0., 0, 0, 0])
+    x0 = np.array([0.0, 4.5, 0, 0])
+    xf = np.array([3.0, 0, 0, 0.3])
+    uf = np.array([0.0, 0, 0, 0])
 
     u = t_mpc.step(x0, xf, uf)
     print(u)

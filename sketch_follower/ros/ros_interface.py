@@ -29,7 +29,7 @@ class ROSInterface:
         self.desired_position = None
 
         interface_node.create_subscription(
-            JointState, "/joint_states", self.joint_states_cb, 10
+            JointState, "/sketch_follower/joint_states", self.joint_states_cb, 10
         )
 
         interface_node.create_subscription(
